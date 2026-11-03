@@ -1,0 +1,37 @@
+diff --git a/crates/ui-egui/src/updates_ui.rs b/crates/ui-egui/src/updates_ui.rs
+index a62a221..60bf1a8 100644
+--- a/crates/ui-egui/src/updates_ui.rs
++++ b/crates/ui-egui/src/updates_ui.rs
+@@ -48,27 +48,14 @@ impl Default for Runtime {
+ impl VectorcraftApp {
+     /// Whether the app asks for a newer release when it starts (off until the desktop app turns it on).
+     #[cfg(not(target_arch = "wasm32"))]
+-    pub fn set_startup_update_check(&mut self, on: bool) {
+-        self.updates_rt.startup_check = on;
++    pub fn set_startup_update_check(&mut self, _on: bool) {
++        // The AppImage is updated by its own package manager; no check is ever asked for.
+     }
+ }
+ 
+-pub(crate) fn check(app: &mut VectorcraftApp) -> Result<Value, String> {
+-    #[cfg(not(target_arch = "wasm32"))]
+-    {
+-        app.updates_rt.check_requested = true;
+-        app.updates_rt.manual_window_open = true;
+-        if let Some(ctx) = &app.updates_rt.repaint {
+-            ctx.request_repaint();
+-        }
+-        Ok(Value::Null)
+-    }
+-    #[cfg(target_arch = "wasm32")]
+-    {
+-        app.updates_rt.manual_window_open = true;
+-        app.updates_rt.status_message = Some("Update check is not supported in the web browser.".into());
+-        Ok(Value::Null)
+-    }
++pub(crate) fn check(_app: &mut VectorcraftApp) -> Result<Value, String> {
++    // Help > Check for Updates would offer to replace this build with an upstream release.
++    Ok(Value::Null)
+ }
+ 
+ pub(crate) fn tick(app: &mut VectorcraftApp, ctx: &egui::Context) {
